@@ -10,6 +10,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Main {
@@ -19,11 +21,11 @@ public class Main {
         String fileName = "data.csv";
         List<Employee> list = parseCSV(columnMapping, fileName);
         String json = listToJson(list);
-        System.out.println(json);
+        writeString(json);
     }
 
     public static List<Employee>  parseCSV(String[] columnMapping, String fileName) {
-        List<Employee> staff = null;
+        List<Employee> staff = new ArrayList<>();
         try (CSVReader csvReader = new CSVReader(new FileReader(fileName))) {
             ColumnPositionMappingStrategy<Employee> strategy =
                     new ColumnPositionMappingStrategy<>();
@@ -41,16 +43,17 @@ public class Main {
 
     public static String listToJson(List<Employee> list) {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        Gson gson = gsonBuilder.create();
+        Gson gson = gsonBuilder.setPrettyPrinting().create();
         Type listType = new TypeToken<List<Employee>>() {}.getType();
-        String json = gson.toJson(list, listType);
-        try (FileWriter file = new
-                FileWriter("data.json")) {
+        return gson.toJson(list, listType);
+    }
+
+    private static void writeString(String json) {
+        try (FileWriter file = new FileWriter("data.json")) {
             file.write(json);
             file.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return json;
     }
 }
