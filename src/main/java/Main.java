@@ -5,16 +5,17 @@ import com.opencsv.CSVReader;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +35,42 @@ public class Main {
         List<Employee> list1 = parseXML(fileName1);
         String json1 = listToJson(list1);
         writeString(json1, outPutFileName1);
+        String json2 = readString("new_data.json");
+        List<Employee> list2 = jsonToList(json2);
+        list2.forEach(System.out::println);
     }
 
-    private static List<Employee> parseXML(String fileName) throws ParserConfigurationException,
+    private static List<Employee> jsonToList(String json) {
+        JSONParser parser = new JSONParser();
+        List<Employee> result = new ArrayList<>();
+        try {
+            JSONArray list = (JSONArray) parser.parse(json);
+            GsonBuilder builder = new GsonBuilder();
+            Gson gson = builder.create();
+            for (Object o : list) {
+                result.add(gson.fromJson(o.toString(), Employee.class));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+        private static String readString(String fileName) {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String temp;
+            while ((temp = br.readLine()) != null) {
+                sb.append(temp);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
+
+
+        private static List<Employee> parseXML(String fileName) throws ParserConfigurationException,
             IOException, SAXException {
         List<Employee> staff = new ArrayList<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
