@@ -56,7 +56,7 @@ public class Main {
         return result;
     }
 
-        private static String readString(String fileName) {
+    private static String readString(String fileName) {
         StringBuilder sb = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String temp;
@@ -70,7 +70,7 @@ public class Main {
     }
 
 
-        private static List<Employee> parseXML(String fileName) throws ParserConfigurationException,
+    private static List<Employee> parseXML(String fileName) throws ParserConfigurationException,
             IOException, SAXException {
         List<Employee> staff = new ArrayList<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
